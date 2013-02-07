@@ -1,0 +1,9 @@
+[
+	{
+		"id": "tools",
+		"caption": "Tools",
+		"children": [
+			{ "caption": "Insert Numbers...", "command": "insert_numbers", "mnemonic": "n", "id": "insert_numbers" }
+		]
+	}
+]
