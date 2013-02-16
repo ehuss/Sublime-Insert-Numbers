@@ -4,13 +4,18 @@ class InsertNumbersCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         s = self.view.sel()
-        default = '1'
+        default = '1 '
         # if len(s) > 1:
         #     default = '1 %i' % (len(s),)
         self.view.window().show_input_panel('Enter Start [Stop [Step]]', default, self.on_done, None, None)
 
     def on_done(self, text):
-        parts = text.split(' ')
+        self.view.run_command('insert_numbers_act', {'text': text})
+
+class InsertNumbersAct(sublime_plugin.TextCommand):
+
+    def run(self, edit, text = ''):
+        parts = text.strip().split(' ')
         stop = None
         step = 1
         try:
@@ -23,16 +28,13 @@ class InsertNumbersCommand(sublime_plugin.TextCommand):
             sublime.error_message('Values must be numbers.')
             return
 
-        edit = self.view.begin_edit()
-        try:
-            if stop == None:
-                stop = len(self.view.sel())
-                for i, r in enumerate(self.view.sel()):
-                    self.view.insert(edit, r.begin(), str(i+1))
-            else:
-                text = '\n'.join(map(str, range(start, stop+1, step)))
-                for r in self.view.sel():
-                    self.view.insert(edit, r.begin(), text)
+        if stop == None:
+            i = start
+            for r in self.view.sel():
+                self.view.insert(edit, r.begin(), str(i))
+                i += step
+        else:
+            text = '\n'.join(map(str, range(start, stop+1, step)))
+            for r in self.view.sel():
+                self.view.insert(edit, r.begin(), text)
 
-        finally:
-            self.view.end_edit(edit)
